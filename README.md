@@ -51,3 +51,49 @@ The analysis was designed to address core business challenges across the custome
 
 9. *Category Profit Efficiency*  
    *Technology* generated *45%* of all profit, followed by *Office Supplies (35%), while **Furniture* contributed the least at *19%*.
+
+   ## Key Findings and Insights
+
+1. Geographic Performance Disparity*
+Asia Pacific recorded the highest Total Sales at 4,042,658, significantly outperforming Africa, which had the lowest at 783,773.
+
+
+2. Recent Growth Trigger
+The Rolling Avg 3M showed a strong upward trend starting August 19, 2015, increasing by 38.98% over 4.40 months, indicating a strong but unidentified growth catalyst.
+
+
+3. Sales Volume Driver
+The 0–10% discount band contributed the majority of Total Sales (7,375,423, or 58.34%), far surpassing the 30–40% band, which generated only 330,749.
+
+
+4. Regional Profit Erosion
+Higher discount ranges (30–40% and >40%) significantly eroded profit and sales, especially in Australia, Turkey, and France.
+
+
+5. Segmented Return Risk
+The Consumer segment had the highest Return Rate (6.51%), followed by Corporate (5.75%) and Home Office (5.49%).
+
+
+6. Customer Class Value
+The Titanium class generated the highest Total Sales and Total Profit.
+The Silver class generated the lowest.
+Top individual performers:
+
+Tom Ashbrook – Total Sales: 30,968.13
+
+Raymond Buch – Total Profit: 8,226.72
+
+
+
+7. Critical Profit Leak
+The 74.63% Lifetime Customer Churn Rate poses a major threat to profitability, offsetting the strong potential of the $972.65 Customer Lifetime Value (CLV).
+
+
+8. Category Sales Dominance
+Technology led with 4,744,557 in Total Sales, outperforming Office Supplies by 25.27% (Office Supplies: 3,787,492.51).
+
+
+9. Category Profit Efficiency
+Technology generated 45% of all profit, followed by Office Supplies (35%), while Furniture contributed the least at 19%.
+
+
