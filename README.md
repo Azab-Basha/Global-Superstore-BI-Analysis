@@ -22,7 +22,7 @@ The analysis was designed to address core business challenges across the custome
 ## 🔑 Key Findings and Insights
 
 1. *Geographic Performance Disparity*  
-   Asia Pacific recorded the highest Total Sales at *4,042,658, significantly outperforming Africa, which had the lowest at **783,773*.
+   Asia Pacific recorded the highest Total Sales at *4,042,658, significantly outperforming Africa, which had the lowest at *783,773*.
 
 2. *Recent Growth Trigger*  
    The *Rolling Avg 3M* showed a strong upward trend starting *August 19, 2015, increasing by **38.98%* over *4.40 months*, indicating a strong but unidentified growth catalyst.
