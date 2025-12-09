@@ -77,7 +77,7 @@ This project utilized best practices in data modeling and advanced calculations 
 | **Data Modeling** | Implemented a **Star Schema** architecture utilizing Fact and Dimension tables for optimized performance. |
 
 ---
-## Advanced DAX Documentation: 1. Dynamic Pareto Analysis
+## Advanced DAX Documentation: 1. Advanced Dynamic Pareto Analysis
 
 This section details the custom measures and supporting tables implemented to create a fully dynamic Pareto Analysis for both Products and Customers, leveraging advanced DAX functions like `WINDOW` and disconnected tables.
 
@@ -224,7 +224,7 @@ RETURN
     )
 ```
 
-## Advanced DAX Documentation: 2.  Advanced Time Intelligence Calculations
+## Advanced DAX Documentation: 2. Advanced Time Intelligence Calculations
 These calculations leverage sophisticated DAX patterns to ensure accurate period-over-period comparisons and reliable rolling averages, handling partial years and incomplete sales history.
 
 ### 1. Sales\_YTD\_oPY % (Year-to-Date Change Over Previous Year)
@@ -390,3 +390,202 @@ DIVIDE(
     [#Customers]
 )
 ```
+## Advanced DAX Documentation: 4. Advanced Product Performance & Ranking Measures
+This section details the custom logic for ranking all products using a composite, weighted score, which moves beyond simple profit analysis to include sales volume and return risk.
+
+### 1. Return Rate-P (Product Return Rate)
+(Description: Calculates the percentage of returned quantity out of the total quantity sold for the current product context.)
+```dax
+Return Rate-P = 
+VAR TotalSoldProductQty = 
+    CALCULATE(SUM(Fact_Sales[Quantity]))
+VAR TotalReturnedProductQty =
+    CALCULATE(
+        SUM(Fact_Sales[Quantity]),
+        'Return Status'[Return Status] = "Returned"
+    )
+VAR Result =
+    DIVIDE(
+        TotalReturnedProductQty, TotalSoldProductQty
+    )
+RETURN
+    Result
+```
+### 2. Product Sales Rank
+(Description: Ranks all products based on Total Sales in Descending order (Highest Sales = Best Rank of 1).)
+```dax
+Product Sales Rank = 
+    RANKX(
+        ALL(Dim_Product),
+        [Total Sales],
+        ,
+        DESC, 
+        Dense
+    )
+```
+### 3. Product Profit Rank
+(Description: Ranks all products based on Total Profit in Descending order (Highest Profit = Best Rank of 1).)
+```dax
+Product Profit Rank = 
+    RANKX(
+        ALL(Dim_Product),
+        [Total Profit],
+        ,
+        DESC,  
+        Dense
+    )
+```
+### 4. Product Return Rank
+(Description: Ranks all products based on Return Rate-P in Ascending order (Lowest Return Rate = Best Rank of 1).)
+```dax
+Product Return Rank = 
+    RANKX(
+        ALL(Dim_Product),
+        [Return Rate-P],
+        ,
+        ASC, 
+        Dense
+    )
+```
+### 5. Product Performance Score (Composite Metric)
+(Description: The final composite score used for ranking, combining Profit, Sales, and Return Rate ranks with custom weightings (50%, 30%, 20%) respectively.)
+```dax
+Product Performance Score = 
+[Product Profit Rank] * .5 +
+// Weight 50%
+[Product Sales Rank] * .3 +
+// Weight 30%
+[Product Return Rank] * .2 
+// Weight 20%
+```
+### 6. Best Product Name
+(Description: Retrieves the actual name of the product that achieved the Minimum (best) score on the Product Performance Score metric.)
+```dax
+Best Product Name = 
+    CALCULATE(
+        MAX(
+            Dim_Product[Product Name]), 
+            FILTER(
+                ALL(Dim_Product),
+                [Product Performance Score] =
+                MINX(
+                    ALL(Dim_Product),
+                    [Product Performance Score])
+            )
+    )
+```
+### 7. Poorest Product Name
+(Description: Retrieves the actual name of the product that achieved the Maximum (worst) score on the Product Performance Score metric.)
+```dax
+Poorest Product Name = 
+    CALCULATE(
+        MAX(
+            Dim_Product[Product Name]), 
+            FILTER(
+                ALL(Dim_Product),
+                [Product Performance Score] =
+                MAXX(
+                    ALL(Dim_Product),
+                    [Product Performance Score])
+            )
+    )
+```
+## Advanced DAX Documentation: 5. Advanced Reference Card Measures
+These calculations are specifically designed to power dynamic KPI cards, enabling period-over-period comparisons, custom text formatting with trend arrows, and conditional coloring.
+
+### 1. Total Sales Growth %
+(Description: Calculates the percentage growth of Total Sales compared to the same period in the Previous Year (PY) using standard time intelligence functions.)
+```dax
+Total Sales Growth % = 
+VAR TotaLSalesPY =
+    CALCULATE(
+        [Total Sales],
+        PREVIOUSYEAR(
+            Dim_Date[Date])
+    )
+
+VAR TotalSalesGrowth = 
+    [Total Sales] - TotaLSalesPY
+
+VAR TotalSalesGrowthh =
+    DIVIDE(
+        TotalSalesGrowth,
+        TotaLSalesPY
+    )
+RETURN
+    TotalSalesGrowthh
+```
+Thank you for providing the correct DAX code for your advanced reference card measures! These calculations effectively demonstrate robust period-over-period comparison and dynamic visualization formatting.
+
+Here is the Markdown documentation for your Advanced Reference Cards calculations, ready for your README.md.
+
+🎴 Advanced Reference Card Measures
+These calculations are specifically designed to power dynamic KPI cards, enabling period-over-period comparisons, custom text formatting with trend arrows, and conditional coloring.
+
+1. Total Sales Growth %
+(Description: Calculates the percentage growth of Total Sales compared to the same period in the Previous Year (PY) using standard time intelligence functions.)
+
+Code snippet
+
+Total Sales Growth % = 
+VAR TotaLSalesPY =
+    CALCULATE(
+        [Total Sales],
+        PREVIOUSYEAR(
+            Dim_Date[Date])
+    )
+
+VAR TotalSalesGrowth = 
+    [Total Sales] - TotaLSalesPY
+
+VAR TotalSalesGrowthh =
+    DIVIDE(
+        TotalSalesGrowth,
+        TotaLSalesPY
+    )
+RETURN
+    TotalSalesGrowthh
+### 2. Total Sales Growth With Arrow (Custom Formatting)
+(Description: Formats the Total Sales Growth % into a human-readable string, displaying the percentage rounded to one decimal place, prefixed with a plus sign (+) for positive growth, and includes trend arrows (↑ or ↓).)
+```dax 
+Total Sales Growth With Arrow = 
+    IF(
+        ISBLANK([Total Sales Growth %]),
+        BLANK(),
+        IF(
+            [Total Sales Growth %] >=0,
+            "+" & ROUND([Total Sales Growth %] * 100,1) & "% ↑",
+            ROUND([Total Sales Growth %] * 100,1) & "% ↓"
+        )
+    )
+```
+### 3. Total Sales Growth % Colors (Conditional Formatting)
+(Description: Returns a simple text string ("Green" or "Red") based on the sign of the Total Sales Growth %. This output is used in Power BI's Conditional Formatting options to dynamically change the color of KPI card text or backgrounds.)
+```dax
+Total Sales Growth % Colors = 
+    IF(
+        [Total Sales Growth %] > 0,
+        "Green",
+        "Red"
+    )
+```
+## Important Note on DAX Methodology
+The DAX measures documented below represent the unique logical structure (the core pattern) used in the project. Many of these measures have been replicated across different dimensions (e.g., Pareto analysis applied to both Customers and Products) and used multiple times with minor changes to the base measure. This methodological approach ensures code efficiency, reduces redundancy, and demonstrates scalability across the entire semantic model.
+
+---
+# Author & Call to Action
+
+This project showcases my disciplined approach to leveraging advanced analytics (DAX, Cohort, Pareto) to deliver tangible business value and actionable strategy.  
+I am actively seeking **Data Analyst, BI Developer, and related freelance opportunities**.
+
+## Contact Information
+
+| Field                | Details                                                                 |
+|----------------------|------------------------------------------------------------------------|
+| **Name**             | Azab Basha                                                              |
+| **Professional Title** | Pharmacist & PL-300 Certified Data Analyst                            |
+| **LinkedIn**         | [LinkedIn Profile](https://www.linkedin.com/in/azab-basha-552912289/) |
+| **Email**            | azabbayoumy@gmail.com                                                   |
+| **Phone (WhatsApp)** | 0531327736                                                            |
+
+
