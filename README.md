@@ -1,4 +1,4 @@
-### Summary & Objective
+## Summary & Objective
 
 This project delivers a comprehensive Power BI analysis of Global Superstore's multi-year performance, focusing on two critical areas: **Customer Lifetime Value (CLV)** and **Product Portfolio Profitability**. The primary objective was to move beyond descriptive reporting to provide prescriptive, actionable insights that **reduce profit leakage** (through high churn and destructive discounting) and **optimize high-value customer retention**.
 ## Dataset Used 
@@ -19,7 +19,7 @@ The analysis was designed to address core business challenges across the custome
 10. Which **geographic markets (countries)** are the highest and lowest performers in terms of absolute sales and profit margin percentage?
 11. What is the relationship between **Average Shipping Days** and **Average Profit** per Order, helping to determine the optimal balance between cost and delivery speed?
 
-## 🔑 Key Findings and Insights
+## Key Findings and Insights
 
 1. **Geographic Performance Disparity**  
    Asia Pacific recorded the highest Total Sales at **4,042,658** significantly outperforming Africa, which had the lowest at **783,773**.
@@ -53,7 +53,7 @@ The analysis was designed to address core business challenges across the custome
    **Technology** generated **45%** of all profit, followed by *Office Supplies **(35%)**, while **Furniture** contributed the least at **19%**.
 
 
- Final Recommendations
+ ## Final Recommendations
 
 1.  *Strategic Resource Shift:** Shift marketing and sales resources away from low-performing regions like **Africa** and redirect them toward **Asia Pacific** to capitalize on proven market demand.
 2.  **Growth Catalyst Replication:** Immediately investigate sales and marketing activities that occurred just prior to **August 19, 2015**, to codify and replicate this successful growth catalyst.
@@ -65,5 +65,162 @@ The analysis was designed to address core business challenges across the custome
 8.  **Technology Inventory Scale:** Allocate greater capital and warehousing space to **Technology** inventory to meet its high sales demand, ensuring supply chains can sustain its dominance.
 9.  **Furniture Profit Deep-Dive:** Conduct a deep-dive analysis into the **Furniture** category to identify the source of its low **(19% )** profit contribution and develop an efficiency plan.
 
+## Technical Toolkit & DAX Highlights
 
+This project utilized best practices in data modeling and advanced calculations to move beyond simple descriptive reporting.
+
+| Tool / Skill | Application |
+| :--- | :--- |
+| **BI Platform** | **Power BI Desktop** **(PL-300 Certified)** |
+| **Data Preparation** | *Power Query (M)* for complex data cleansing and transformation. |
+| **Database Querying** | **Foundational SQL** understanding for efficient data extraction and connection when connecting to live relational databases. |
+| **Data Modeling** | Implemented a **Star Schema** architecture utilizing Fact and Dimension tables for optimized performance. |
+
+---
+## Advanced DAX Documentation: Dynamic Pareto Analysis
+
+This section details the custom measures and supporting tables implemented to create a fully dynamic Pareto Analysis for both Products and Customers, leveraging advanced DAX functions like `WINDOW` and disconnected tables.
+
+### 1. X\_axis (Calculated Table)
+(Description: A disconnected table used as a continuous numerical axis for plotting the Pareto curve line chart.)
+
+```dax
+X_axis = 
+SELECTCOLUMNS(
+    GENERATESERIES(1, COUNTROWS(Dim_Customer)),
+    "X", [Value]
+)
+```
+### 2. Metric (Calculated Table)
+​(Description: A disconnected table listing the metrics the user can select for the Pareto Analysis.)
+```dax
+Metric = 
+SELECTCOLUMNS(
+    {
+        "Total Sales",
+        "Total Profit",
+        "Total Cost",
+        "Total Orders"
+    },
+    "Meausre", [Value]
+)
+```
+### 3. Metric Value (Measure)
+​(Description: Returns the value of the measure selected by the user from the Metric table.)
+```dax
+Metric Value = 
+SWITCH(
+    SELECTEDVALUE(Metric[Meausre]),
+    "Total Sales", [Total Sales],
+    "Total Profit", [Total Profit],
+    "Total Cost", [Total Cost],
+    "Total Orders", [Total Orders],
+    ERROR("Meaure Not Selected In Metric[Measure]")
+)
+```
+### 4. Pareto Cumulative (Measure)
+​(Description: Calculates the running cumulative total of the selected metric across customers, ordered from highest value to lowest rank (using WINDOW).)
+```dax
+Pareto Cumulative = 
+VAR X_Pos = SELECTEDVALUE(X_axis[X]) 
+VAR Points =
+    ADDCOLUMNS(
+        VALUES(Dim_Customer[Customer ID]),
+        "@Value", [Metric Value]
+    )
+VAR Cumulated_Points =
+    WINDOW(
+        1, ABS,
+        X_Pos,ABS,
+        Points,
+        ORDERBY([@Value], DESC, Dim_Customer[Customer ID],ASC)
+    )
+VAR Result = 
+    SUMX(
+        Cumulated_Points,
+        [@Value]
+    )
+RETURN
+    Result
+```
+### 5. Pareto Amount (Measure)
+​(Description: An alternative calculation similar to Pareto Cumulative, focusing on the specific amount at the current X_Pos.)
+```dax 
+Pareto Amount = 
+VAR X_Pos = SELECTEDVALUE(X_axis[X])
+VAR Points =
+    ADDCOLUMNS(
+        VALUES(Dim_Customer[Customer ID]),
+        "@Value", [Metric Value]
+    )
+VAR Cumulated_Points =
+    WINDOW(
+        X_Pos, ABS,
+        X_Pos,ABS,
+        Points,
+        ORDERBY([@Value], DESC, Dim_Customer[Customer ID],ASC)
+    )
+VAR Result = 
+    SUMX(
+        Cumulated_Points,
+        [@Value]
+    )
+RETURN
+    Result
+```
+### 6. Customer Name (Measure)
+​(Description: Returns the name of the single customer at the specified rank (X_Pos) on the Pareto line, primarily used for tooltips or detail cards.)
+```dax
+Customer Name = 
+VAR X_Pos = SELECTEDVALUE(X_axis[X]) 
+VAR Points =
+    ADDCOLUMNS(
+        ALLSELECTED(Dim_Customer[Customer ID], Dim_Customer[Customer Name]),
+        "@Value", [Metric Value]
+    )
+VAR Cumulated_Points =
+    WINDOW(
+        X_Pos, ABS,
+        X_Pos,ABS,
+        Points,
+        ORDERBY([@Value], DESC, Dim_Customer[Customer ID],ASC)
+    )
+VAR Result = 
+    SELECTCOLUMNS(
+        Cumulated_Points,
+        Dim_Customer[Customer Name]
+    )
+RETURN
+    Result
+```
+### 7. Pareto % (Measure)
+​(Description: Calculates the percentage contribution of the cumulative metric value relative to the total selected metric value for the entire filtered customer base (ALLSELECTED).)
+```dax
+Pareto % = 
+DIVIDE(
+    [Pareto Cumulative],
+    CALCULATE(
+        [Metric Value],
+        ALLSELECTED(
+            Dim_Customer)
+))
+```
+### 8. What If Pareto % (Measure)
+​(Description: Used for conditional formatting; returns the Pareto percentage only when it is exactly at the user-defined What-If percentage threshold to mark a single point on the Pareto chart.)
+```dax
+What If Pareto % = 
+VAR Threshold = SELECTEDVALUE('What If Pareto'[What If Pareto])
+VAR ParetoPercent = 
+    DIVIDE(
+        [Pareto Cumulative],
+        CALCULATE(
+            [Metric Value],
+            ALL(Dim_Customer)
+        )
+    )
+RETURN
+    IF(
+        ABS(ParetoPercent - Threshold) <0.01, ParetoPercent, BLANK()
+    )
+```
 
