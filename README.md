@@ -98,7 +98,7 @@ This project utilized best practices in data modeling and advanced calculations 
 
 <img width="1313" height="726" alt="5-Products Analysis" src="https://github.com/user-attachments/assets/f72b0d78-3076-42d9-b854-988a4ba37414" />
 
-## Report Pages: 6. 6-Insights and Recomendations
+## Report Pages: 6. Insights and Recomendations
 
 <img width="1321" height="727" alt="6-Insights and Recomendations" src="https://github.com/user-attachments/assets/b7ba5f19-dcee-49b6-8c8b-0fc98fb393db" />
 
