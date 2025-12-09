@@ -77,6 +77,35 @@ This project utilized best practices in data modeling and advanced calculations 
 | **Data Modeling** | Implemented a **Star Schema** architecture utilizing Fact and Dimension tables for optimized performance. |
 
 ---
+
+## Report Pages: 1. Introduction 
+
+<img width="1307" height="725" alt="1-Introduction" src="https://github.com/user-attachments/assets/76568df5-ff68-41ef-91ed-e69cff74bfa6" />
+
+## Report Pages: 2. Overview
+
+<img width="1310" height="727" alt="2-Overview" src="https://github.com/user-attachments/assets/18483e0c-8747-4444-ba51-c8b6a8676f0b" />
+
+## Report Pages: 3. Overview Page Info!
+
+<img width="1305" height="731" alt="3-PageInfo" src="https://github.com/user-attachments/assets/97800995-d3b0-4e68-9269-53aed4c435fd" />
+
+## Report Pages: 4. Customers Analysis 
+
+<img width="1316" height="732" alt="4-Customers Analysis" src="https://github.com/user-attachments/assets/f729010e-e318-4005-82ec-63cefc8802c6" />
+
+## Report Pages: 5. Products Analysis 
+
+<img width="1313" height="726" alt="5-Products Analysis" src="https://github.com/user-attachments/assets/f72b0d78-3076-42d9-b854-988a4ba37414" />
+
+## Report Pages: 6. 6-Insights and Recomendations
+
+<img width="1321" height="727" alt="6-Insights and Recomendations" src="https://github.com/user-attachments/assets/b7ba5f19-dcee-49b6-8c8b-0fc98fb393db" />
+
+## Report Pages: 7. Products Details
+
+<img width="1322" height="723" alt="7-Customer Details " src="https://github.com/user-attachments/assets/ca88e200-077c-4746-af56-64be36d8fb3c" />
+
 ## Advanced DAX Documentation: 1. Advanced Dynamic Pareto Analysis
 
 This section details the custom measures and supporting tables implemented to create a fully dynamic Pareto Analysis for both Products and Customers, leveraging advanced DAX functions like `WINDOW` and disconnected tables.
