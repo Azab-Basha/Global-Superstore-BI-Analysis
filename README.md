@@ -63,7 +63,7 @@ The analysis was designed to address core business challenges across the custome
 6.  **Customer Class Investment:** Prioritize marketing spend and VIP service on the top-tier **Titanium** class. Create a remediation or sunset plan for the low-performing **Silver** class to stop resource drain.
 7.  **Retention Program Launch:** Launch a focused campaign within **90 days** of the first purchase to drive a second sale and actively reduce the high **74.63% lifetime churn rate**.
 8.  **Technology Inventory Scale:** Allocate greater capital and warehousing space to **Technology** inventory to meet its high sales demand, ensuring supply chains can sustain its dominance.
-9.  **Furniture Profit Deep-Dive:** Conduct a deep-dive analysis into the **Furniture** category to identify the source of its low **(19% )**profit contribution* and develop an efficiency plan.
+9.  **Furniture Profit Deep-Dive:** Conduct a deep-dive analysis into the **Furniture** category to identify the source of its low **(19% )** profit contribution and develop an efficiency plan.
 
 
 
