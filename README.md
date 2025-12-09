@@ -1,2 +1,3 @@
-# Global-Superstore-BI-Analysis
-This is an end-to-end Power BI report built on the Global Superstore dataset. The report answers critical business questions related to revenue, profitability, customer retention, customer lifetime value (CLV), and product performance.  to identify performance gaps and uncover actionable insights that support better business decision-making. 
+### 🎯 Summary & Objective
+
+This project delivers a comprehensive Power BI analysis of Global Superstore's multi-year performance, focusing on two critical areas: *Customer Lifetime Value (CLV)* and *Product Portfolio Profitability. The primary objective was to move beyond descriptive reporting to provide prescriptive, actionable insights that **reduce profit leakage* (through high churn and destructive discounting) and *optimize high-value customer retention*.
