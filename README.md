@@ -615,6 +615,7 @@ I am actively seeking **Data Analyst, BI Developer, and related freelance opport
 | **Professional Title** | Pharmacist & PL-300 Certified Data Analyst                            |
 | **LinkedIn**         | [LinkedIn Profile](https://www.linkedin.com/in/azab-basha-552912289/) |
 | **Email**            | azabbayoumy@gmail.com                                                   |
-| **Phone (WhatsApp)** | 0531327736                                                            |
+| **Phone (WhatsApp)** | (+966) 0531327736                                                            |
+| **Residency**         | Jeddah, Saudi Arabia 
 
 
