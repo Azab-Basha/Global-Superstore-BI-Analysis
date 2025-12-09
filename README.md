@@ -77,7 +77,7 @@ This project utilized best practices in data modeling and advanced calculations 
 | **Data Modeling** | Implemented a **Star Schema** architecture utilizing Fact and Dimension tables for optimized performance. |
 
 ---
-## Advanced DAX Documentation: Dynamic Pareto Analysis
+## Advanced DAX Documentation: 1. Dynamic Pareto Analysis
 
 This section details the custom measures and supporting tables implemented to create a fully dynamic Pareto Analysis for both Products and Customers, leveraging advanced DAX functions like `WINDOW` and disconnected tables.
 
@@ -222,5 +222,78 @@ RETURN
     IF(
         ABS(ParetoPercent - Threshold) <0.01, ParetoPercent, BLANK()
     )
+```
+
+## Advanced DAX Documentation: 2.  Advanced Time Intelligence Calculations
+These calculations leverage sophisticated DAX patterns to ensure accurate period-over-period comparisons and reliable rolling averages, handling partial years and incomplete sales history.
+
+### 1. Sales\_YTD\_oPY % (Year-to-Date Change Over Previous Year)
+(Description: Calculates the percentage change between Total Sales Year-to-Date (YTD) for the current year and the Total Sales YTD for the previous year. Includes a check (ShowValueForDates) to prevent displaying results for future dates.)
+
+```dax
+Sales_YTDoPY % = 
+VAR Sales_PYC = 
+    IF(
+        [ShowValueForDates], 
+        CALCULATE(
+            [Total Sales],
+            PARALLELPERIOD(
+                Dim_Date[Date],
+                -1,
+                YEAR
+            )
+        )
+    )
+VAR ValueCurrentPeriod = [Sales_YTD]
+VAR ValuePreviousPeriod = Sales_PYC
+VAR Sales_YTDoPY =
+    IF(
+        NOT ISBLANK(ValueCurrentPeriod) && NOT ISBLANK(ValuePreviousPeriod),
+        ValueCurrentPeriod - ValuePreviousPeriod
+    )
+RETURN
+    DIVIDE(
+        Sales_YTDoPY,
+        Sales_PYC
+    )
+```
+### 2. Rolling Avg 3M (3-Month Rolling Average)
+​(Description: Calculates the 3-month rolling average of the selected metric ([Metric Value]). Includes a crucial check (FirstDayWithData <= FirstDayInPeriod) to avoid distorting the average when the 3-month period precedes the first date of transactions in the dataset.)
+```dax
+Rolling Avg 3M = 
+VAR Period3M = 
+    CALCULATETABLE(
+        DATESINPERIOD(
+            Dim_Date[Date],
+            MAX(Dim_Date[Date]),
+            -3,
+            MONTH
+        ),
+        Dim_Date[DatesWithSales] = TRUE() 
+    )
+
+VAR FirstDayWithData = 
+    CALCULATE(
+        MIN(Fact_Sales[Order Date]),
+        REMOVEFILTERS()
+    )
+
+VAR FirstDayInPeriod =
+    MINX(
+        Period3M,
+        Dim_Date[Date]
+    )
+
+VAR Result =
+    IF(
+        FirstDayWithData <= FirstDayInPeriod, 
+        AVERAGEX(
+            Period3M,
+            [Metric Value]
+        )
+    )
+
+RETURN
+    Result
 ```
 
