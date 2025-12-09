@@ -296,4 +296,97 @@ VAR Result =
 RETURN
     Result
 ```
+## Advanced DAX Documentation: 3. Advanced Customer Analytics (Cohort & CLV)
+These calculations form the foundation of the Customer Analysis page, allowing for dynamic cohort tracking and the calculation of potential customer value using best practices.
 
+### 1. FirstOrderYear (Calculated Column in Fact_Sales or Dim_Customer)
+(Description: Identifies the initial purchase year for every unique customer, necessary for cohort grouping.)
+```dax 
+FirstOrderYear = 
+CALCULATE(
+    MIN(Fact_Sales[Year]),
+    ALLEXCEPT(Fact_Sales, Fact_Sales[Customer ID])
+)
+```
+### 2. Retention Rate (Measure)
+(Description: Calculates the percentage of customers from a specific cohort (FirstOrderYear) who made a purchase in a subsequent year, filtered to avoid showing 100% in the initial year.)
+```dax
+Retention Rate = 
+VAR RetentionRate = 
+    DIVIDE(
+        [ActiveCustomers],
+        CALCULATE(
+            [ActiveCustomers],
+            ALL(Fact_Sales),
+            Fact_Sales[FirstOrderYear] = MIN(Fact_Sales[FirstOrderYear])
+        )
+    )
+RETURN
+    IF(
+        RetentionRate = 1, BLANK(), RetentionRate
+    )
+```
+### 3. Exited (Calculated Column in Dim_Customer)
+(Description: A classification column used to tag customers as "Retained" (purchased in multiple years) or "Churned" (purchased only in their first year).)
+```dax
+Exited = 
+VAR FirstPurchasedYear = 
+    CALCULATE(
+        MIN(Dim_Date[Year]),
+        RELATEDTABLE(Fact_Sales)
+    )
+
+VAR LastPurchasedYear = 
+    CALCULATE(
+        MAX(Dim_Date[Year]),
+        RELATEDTABLE(Fact_Sales)
+    )
+
+RETURN
+    IF(
+        LastPurchasedYear > FirstPurchasedYear, 
+        "Retained", 
+        "Churned"
+    )
+```
+### 4. Lifetime Churn Rate (Measure)
+(Description: The percentage of the total customer base that has been classified as churned, representing the overall retention problem.)
+```dax
+Lifetime Churn Rate = 
+DIVIDE(
+    [Churned Customers],
+    [#Customers]
+)
+```
+### 5. Customer Lifetime Value (CLV) (Measure)
+(Description: Calculates the estimated total revenue a customer will contribute over their entire relationship using the formula: Average Customer Value (ACV) * Average Customer Lifespan (ACL).)
+```dax
+Customer Lifetime Value (CLV) = 
+VAR APV = 
+    DIVIDE(
+        [Total Sales], [Total Orders]
+    )
+
+VAR PFR = 
+    DIVIDE(
+        [Total Orders], [#Customers]
+    )
+
+VAR ACV = APV * PFR
+
+VAR ACL = 
+    DIVIDE(1, [Lifetime Churn Rate])
+
+VAR CLV = ACV * ACL
+RETURN
+    CLV
+```
+### 6. Avg. Profit Per Customer (Measure)
+(Description: A fundamental KPI showing the total profit generated distributed across the number of unique customers.)
+```dax
+Avg. Profit Per Customer = 
+DIVIDE(
+    [Total Profit],
+    [#Customers]
+)
+```
