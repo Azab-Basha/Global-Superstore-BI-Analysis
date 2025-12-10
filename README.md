@@ -544,36 +544,7 @@ VAR TotalSalesGrowthh =
 RETURN
     TotalSalesGrowthh
 ```
-Thank you for providing the correct DAX code for your advanced reference card measures! These calculations effectively demonstrate robust period-over-period comparison and dynamic visualization formatting.
 
-Here is the Markdown documentation for your Advanced Reference Cards calculations, ready for your README.md.
-
-🎴 Advanced Reference Card Measures
-These calculations are specifically designed to power dynamic KPI cards, enabling period-over-period comparisons, custom text formatting with trend arrows, and conditional coloring.
-
-1. Total Sales Growth %
-(Description: Calculates the percentage growth of Total Sales compared to the same period in the Previous Year (PY) using standard time intelligence functions.)
-
-Code snippet
-
-Total Sales Growth % = 
-VAR TotaLSalesPY =
-    CALCULATE(
-        [Total Sales],
-        PREVIOUSYEAR(
-            Dim_Date[Date])
-    )
-
-VAR TotalSalesGrowth = 
-    [Total Sales] - TotaLSalesPY
-
-VAR TotalSalesGrowthh =
-    DIVIDE(
-        TotalSalesGrowth,
-        TotaLSalesPY
-    )
-RETURN
-    TotalSalesGrowthh
 ### 2. Total Sales Growth With Arrow (Custom Formatting)
 (Description: Formats the Total Sales Growth % into a human-readable string, displaying the percentage rounded to one decimal place, prefixed with a plus sign (+) for positive growth, and includes trend arrows (↑ or ↓).)
 ```dax 
